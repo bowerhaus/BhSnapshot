@@ -1,0 +1,16 @@
+<project>
+ <properties autorotation="3" fps="60" scaleMode="2" iosDevice="0" packageName="com.yourdomain.yourapp" logicalHeight="1024" logicalWidth="768" retinaDisplay="3" assetsOnly="0" orientation="1" architecture="0">
+  <imageScales/>
+ </properties>
+ <folder name="Libraries">
+  <file source="Libraries/Misc/strict.lua"/>
+  <file source="Libraries/Misc/gtween.lua"/>
+  <file source="Libraries/Misc/easing.lua"/>
+  <file source="Libraries/BhHelpers/BhHelpers.lua"/>
+ </folder>
+ <file source="main.lua"/>
+ <file source="init.lua"/>
+ <file source="BhSnapshotDemo.lua"/>
+ <file source="Shutter.mp3"/>
+ <file source="Poppy.jpg"/>
+</project>
