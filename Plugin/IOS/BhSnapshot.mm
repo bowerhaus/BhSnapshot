@@ -165,7 +165,6 @@ static CGRect getBoundsRect(lua_State *L, int stackOffset)   {
 }
 
 static int snapshotToFile(lua_State* L) {
-    bool result=true;
     SnapshotHelper *snapshotHelper= [[SnapshotHelper alloc] init];
     snapshotHelper.maxSize =0;
     snapshotHelper.orientation = UIImageOrientationDownMirrored;
@@ -188,13 +187,37 @@ static int snapshotToFile(lua_State* L) {
     UIImage *image= [snapshotHelper getImageFromFrameBuffer];
 
     // Write image to PNG
-    [UIImagePNGRepresentation(image) writeToFile:imageFile atomically:YES];
+    bool ok=[UIImagePNGRepresentation(image) writeToFile:imageFile atomically:YES];
     lua_pushstring(L, [imageFile UTF8String]);
+    lua_pushboolean(L, ok);
 
      // Free up
     [snapshotHelper release];
+    return 2;
+}
 
-    return result;
+static int compareImages(lua_State* L) {
+    bool result=false;
+    
+    NSString *imageFile1=NULL;
+    if (lua_isstring(L, 1))
+        imageFile1=[NSString stringWithUTF8String: luaL_checkstring(L, 1)];
+    NSString *imageFile2=NULL;
+    if (lua_isstring(L, 2))
+        imageFile2=[NSString stringWithUTF8String: luaL_checkstring(L, 2)];
+    
+    if (imageFile1 != NULL && imageFile2 != NULL){
+        UIImage *image1=[UIImage imageWithContentsOfFile: imageFile1];
+        UIImage *image2=[UIImage imageWithContentsOfFile: imageFile2];
+        if (image1 != NULL && image2 != NULL){
+            NSData *data1 = UIImagePNGRepresentation(image1);
+            NSData *data2 = UIImagePNGRepresentation(image2);
+            result = [data1 isEqual:data2];
+        }
+    }
+    
+    lua_pushboolean(L, result);
+    return 1;
 }
 
 static int snapshotToAlbum(lua_State* L) {
@@ -237,6 +260,7 @@ static int loader(lua_State *L)
     const luaL_Reg functionlist[] = {
         {"snapshotToFile", snapshotToFile},
         {"snapshotToAlbum", snapshotToAlbum},
+        {"compareImages", compareImages},
         {"getPathForFile", getPathForFile} ,
         {NULL, NULL},
     };
